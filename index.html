@@ -33,18 +33,20 @@
         <h1 style="position:absolute;left:700px;top:10px;font-size:50px;" >SQL EDITOR</h1>
     </div>
     <div style="position:absolute;left:170px;">
-        <button id="submit" onClick="getQuery()">Find Query</button>
+        <button id="submit" onClick="call()">Find Query</button>
     </div><br><br><br>
    <div class="flex-parent">
-    <div ><textarea id="w3review" name="query_box" rows="30" cols="80"></textarea></div>
+    <div ><textarea id="query_box" name="query_box" rows="30" cols="80"></textarea></div>
     <div>&emsp;&emsp;</div>
-    <div ><textarea id="w3review" name="result_box" rows="30" cols="80"></textarea></div>
+    <div ><textarea id="result_box" name="result_box" rows="30" cols="80"></textarea></div>
 </div>
 </body>
 </html>
 <script>
     function call(){
         console.log("HEllo");
+        var queryText = document.getElementById("query_box").value;
+        console.log(queryText); 
     }
     function getQuery(){
     var txt="",i;
