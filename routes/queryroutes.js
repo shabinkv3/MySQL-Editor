@@ -4,7 +4,10 @@ const Queries = require("../models/queries");
 
 router.get("/", (req, res) => {
   Queries.find()
-    .then((queries) => res.json(queries))
+    .then((queries) => {
+      res.header("Access-Control-Allow-Origin", "*");
+      res.json(queries);
+    })
     .catch((err) => res.send("Error: " + err));
 });
 
@@ -18,6 +21,23 @@ router.post("/", async (req, res) => {
   } catch (err) {
     res.send("Error: " + err);
   }
+});
+
+router.post("/query", async (req, res) => {
+  Queries.find()
+    .then((queries) => {
+      var i;
+      matching = [];
+      for (i = 0; i < queries.length; i++) {
+        if (queries[i].query.indexOf(req.body.query.toLowerCase()) > -1) {
+          matching.push(queries[i]);
+        }
+      }
+
+      res.header("Access-Control-Allow-Origin", "*");
+      res.json({ matching: matching });
+    })
+    .catch((err) => res.send("Error: " + err));
 });
 
 /*router.get('/',(req,res)=>{
