@@ -1,27 +1,26 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const url='mongodb://localhost/AlienDBex'
+const express = require("express");
+const mongoose = require("mongoose");
+const url = "mongodb://localhost/queries";
 
-const app=express()
+const app = express();
 
-mongoose.connect(url, {useNewUrlParser:true})
-const con=mongoose.connection
+mongoose.connect(url, { useNewUrlParser: true });
+const con = mongoose.connection;
 
-con.on('open',()=>{
-    console.log('connected..')
-})
+con.on("open", () => {
+  console.log("connected..");
+});
 
-app.use(express.json())
+app.use(express.json());
 
-const alienRouter = require('./routes/aliens')
-app.use('/aliens',alienRouter)
+const queryrouter = require("./routes/queryroutes");
+app.use("/queries", queryrouter);
 
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 9000;
 }
 
-
-app.listen(port, ()=>{
-    console.log("Server started")
-})
+app.listen(port, () => {
+  console.log("Server started");
+});
