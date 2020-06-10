@@ -16,6 +16,10 @@ app.use(express.json());
 const queryrouter = require("./routes/queryroutes");
 app.use("/queries", queryrouter);
 
+app.use("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+ });
+
 let port = process.env.PORT;
 if (port == null || port == "") {
   port = 9000;

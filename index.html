@@ -1,0 +1,66 @@
+<style>
+    #y{
+        background-color: #260d1a;
+    }
+    #top-bar,html{
+        height: 150px;
+        background-color: whitesmoke;
+    }
+    .flex-parent {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #submit {
+       
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div id="top-bar">
+        <h1 style="position:absolute;left:700px;top:10px;font-size:50px;" >SQL EDITOR</h1>
+    </div>
+    <div style="position:absolute;left:170px;">
+        <button id="submit" onClick="getQuery()">Find Query</button>
+    </div><br><br><br>
+   <div class="flex-parent">
+    <div ><textarea id="w3review" name="query_box" rows="30" cols="80"></textarea></div>
+    <div>&emsp;&emsp;</div>
+    <div ><textarea id="w3review" name="result_box" rows="30" cols="80"></textarea></div>
+</div>
+</body>
+</html>
+<script>
+    function call(){
+        console.log("HEllo");
+    }
+    function getQuery(){
+    var txt="",i;
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) 
+        {
+            var myObj = JSON.parse(this.responseText);
+            console.log(myObj[0].query);
+        }
+    };
+    
+    xmlhttp.open("GET",'http://localhost:9000/queries', true);
+    xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xmlhttp.send();
+
+    }
+</script>
