@@ -2,7 +2,7 @@
         { qname: 'select () from () where ()'},
         { qname: 'select () from () where () order by () ASC'},
         { qname: 'select () from () where () order by () DESC'},
-        { qname: 'select * from ()'},
+        { qname: 'select * from ^},
         { qname: 'insert into () values (a,b)'},
         { qname: 'select AVG() from () where ()'},
         { qname: 'select MAX() as () from ()'},

@@ -23,19 +23,19 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/query", async (req, res) => {
+router.get("/query", (req, res) => {
   Queries.find()
     .then((queries) => {
       var i;
       matching = [];
       for (i = 0; i < queries.length; i++) {
-        if (queries[i].query.indexOf(req.body.query.toLowerCase()) > -1) {
-          matching.push(queries[i]);
+        if (queries[i].query.indexOf(req.query.q.toLowerCase()) > -1) {
+          matching.push(queries[i].query);
         }
       }
 
       res.header("Access-Control-Allow-Origin", "*");
-      res.json({ matching: matching });
+      res.json({ matching });
     })
     .catch((err) => res.send("Error: " + err));
 });
