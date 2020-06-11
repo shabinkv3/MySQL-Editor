@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font: 16px Arial;
+      }
+
+      /*the container must be positioned relative:*/
+      .autocomplete {
+        position: relative;
+        display: inline-block;
+      }
+
+      input {
+        border: 1px solid transparent;
+        background-color: #f1f1f1;
+        font-size: 16px;
+      }
+
+      input[type="text"] {
+        background-color: #f1f1f1;
+        width: 100%;
+      }
+
+      button {
+        background-color: DodgerBlue;
+        color: #fff;
+        cursor: pointer;
+        position: relative;
+        left: 10px;
+      }
+
+      .autocomplete-items {
+        position: absolute;
+        border: 1px solid #d4d4d4;
+        border-bottom: none;
+        border-top: none;
+        z-index: 99;
+        /*position the autocomplete items to be the same width as the container:*/
+        top: 100%;
+        left: 0;
+        right: 0;
+      }
+
+      .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #fff;
+        border-bottom: 1px solid #d4d4d4;
+      }
+
+      /*when hovering an item:*/
+      .autocomplete-items div:hover {
+        background-color: #e9e9e9;
+      }
+
+      /*when navigating through the items using the arrow keys:*/
+      .autocomplete-active {
+        background-color: DodgerBlue !important;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Autocomplete</h2>
+
+    <p>Start typing:</p>
+
+    <!--Make sure the form has the autocomplete function switched off:-->
+    <form autocomplete="off">
+      <div class="autocomplete">
+        <textarea
+          rows="3"
+          cols="40"
+          id="myInput"
+          type="text"
+          name="myCountry"
+          placeholder="Enter SQL command here.."
+          onInput="if(this.value.length>0) {get('http://localhost:9000/queries/query?q=',this.value,handle)}"
+        ></textarea>
+        <div id="myInputautocomplete-list" class="autocomplete-items"></div>
+      </div>
+      <button style="padding: 10px;" onClick="alert('Submitted!!')">
+        Submit Query
+      </button>
+    </form>
+
+    <script>
+      replacements = [];
+
+      function getCombine(s1, wordList) {
+        var i,
+          no_of_seps = 0,
+          finalString = "",
+          queryList = [];
+        s1 = s1.trim();
+        //console.log(wordList);
+        // for(i=0;i<s1.length;i++){
+        //     if(s1[i]=='^'){
+        //         no_of_seps++;
+        //     }
+        // }
+        // // console.log(no_of_seps);
+        var queryList = s1.split("^");
+        // for(i=0;i<stringSplit.length;i++){
+        //     queryList.push(stringSplit[i]);
+        // }
+        // console.log(queryList);
+        if (queryList.length == wordList.length) {
+          for (i = 0; i < no_of_seps; i++) {
+            finalString += queryList[i];
+            finalString += wordList[i];
+          }
+          finalString += queryList[i];
+        } else {
+          for (i = 0; i < wordList.length; i++) {
+            finalString += queryList[i];
+            finalString += wordList[i];
+          }
+          while (i != queryList.length) {
+            finalString += queryList[i++];
+            finalString += " _ ";
+          }
+        }
+        return finalString.substring(0, finalString.length - 2);
+      }
+
+      keywords = [
+        "INSERT",
+        "INTO",
+        "VALUES(",
+        ")",
+        "ORDER",
+        "BY",
+        "SELECT",
+        "FROM",
+        "WHERE",
+        "ASC",
+        "DESC",
+        "*",
+        "VALUES",
+        "AS",
+        "AVG(",
+        "MIN(",
+        "MAX(",
+        "COUNT(*)",
+        "COUNT(",
+        "GROUP",
+        "HAVING",
+        "IN",
+        "DISTINCT",
+        "NOT",
+        "EXISTS",
+        "DELETE",
+        "UPDATE",
+        "SET",
+      ];
+
+      function split(inp_text) {
+        inp_text = inp_text.concat("^");
+        words = [];
+        word = "";
+        paranthesis = 0;
+
+        for (letter of inp_text) {
+          if (letter == " " && paranthesis == 0) {
+            if (word != "") words.push(word);
+            word = "";
+            continue;
+          }
+
+          if (letter == "(") {
+            paranthesis++;
+            if (paranthesis == 1) {
+              if (word == "") {
+                words[words.length - 1] = words[words.length - 1].concat("(");
+              } else {
+                word = word.concat("(");
+                words.push(word);
+                word = "";
+              }
+              continue;
+            }
+          }
+
+          if (letter == ")") {
+            paranthesis--;
+            if (paranthesis == 0) {
+              if (word != "") {
+                words.push(word);
+                word = "";
+              }
+              words.push(")");
+              continue;
+            }
+          }
+
+          if (letter == "^") {
+            if (word != "") words.push(word);
+            word = "";
+            continue;
+          }
+          word = word.concat(letter);
+        }
+
+        return words;
+      }
+
+      function is_substr_keyword(word, keyword_array) {
+        for (keyword of keyword_array) {
+          var pos = keyword.indexOf(word);
+
+          if (pos == 0) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function preprocess(inp_text, keywords_array) {
+        var words = split(inp_text);
+        var non_keywords = [];
+        for (var i = 0; i < words.length; i++) {
+          if (i == words.length - 1) {
+            if (!is_substr_keyword(words[i].toUpperCase(), keywords_array)) {
+              non_keywords.push(words[i]);
+              words[i] = "^";
+            }
+          } else {
+            if (!keywords_array.includes(words[i].toUpperCase())) {
+              non_keywords.push(words[i]);
+              words[i] = "^";
+            }
+          }
+        }
+
+        processed_string = words.join(" ");
+        replacements = non_keywords;
+        return processed_string;
+      }
+
+      function get(url, entered, callback) {
+        document.getElementById("myInputautocomplete-list").innerHTML = "";
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+          if (this.readyState == 4) {
+            callback(this.responseText);
+          }
+        };
+        xmlhttp.open("GET", url + preprocess(entered, keywords), true);
+        xmlhttp.setRequestHeader(
+          "Content-type",
+          "application/x-www-form-urlencoded"
+        );
+        xmlhttp.send();
+      }
+
+      function handle(data) {
+        myObj = JSON.parse(data).matching;
+
+        for (var i = 0; i < myObj.length; i++) {
+          //comparing if input string is existing in tags[i] string
+
+          var node = document.createElement("div");
+          node.setAttribute(
+            "onClick",
+            "document.getElementById('myInput').value=event.target.innerHTML.trim();document.getElementById('myInputautocomplete-list').innerHTML=''"
+          );
+          var val = document.createTextNode(getCombine(myObj[i], replacements));
+          node.appendChild(val);
+
+          document.getElementById("myInputautocomplete-list").appendChild(node);
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -29,7 +29,7 @@ router.get("/query", (req, res) => {
       var i;
       matching = [];
       for (i = 0; i < queries.length; i++) {
-        if (queries[i].query.indexOf(req.query.q.toLowerCase()) > -1) {
+        if (queries[i].query.indexOf(req.query.q.toLowerCase()) == 0) {
           matching.push(queries[i].query);
         }
       }
