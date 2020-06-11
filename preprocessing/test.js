@@ -46,7 +46,8 @@ function split(inp_text){
 		}
 
 		if(letter == "^"){
-			words.push(word);
+			if (word != "")
+				words.push(word);
 			word="";
 			continue;
 		}
@@ -58,29 +59,48 @@ function split(inp_text){
 }
 
 
-function is_keyword(word, keyword_array){
+function is_substr_keyword(word, keyword_array){
 	for(keyword of keyword_array){
+		var pos = keyword.indexOf(word);
 		
+		if(pos == 0){
+			return true;
+		}
 	}
+	return false;
 }
 
 
 function preprocess(inp_text, keywords_array){
 	var words = split(inp_text);
-	// console.log(words);
+	console.log(words);
+	var non_keywords = [];
 	for(var i =0; i< words.length; i++){
-		if(!(keywords_array.includes(words[i].toUpperCase()))){
-			words[i] = "^";
+
+		if(i == words.length -1){
+
+			if(!is_substr_keyword(words[i].toUpperCase(),keywords_array)){
+				non_keywords.push(words[i]);
+				words[i] = "^";
+			}
+		}
+		else
+		{
+
+			if(!(keywords_array.includes(words[i].toUpperCase()))){
+				non_keywords.push(words[i]);
+				words[i] = "^";
+			}
 		}
 	}
 
 	processed_string = words.join(" ");
-	return processed_string
+	return [processed_string, non_keywords];
 }
 
 
 keywords = ["INSERT","INTO","VALUES(","VALUES",")"];
-text = "insert into table1 values(my friend) test"
+text = "insert into table1 values(my friend Inse "
 
 console.log(preprocess(text,keywords));
 
