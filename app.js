@@ -22,7 +22,7 @@ app.use("/", (req, res) => {
 
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 9002;
+  port = 9000;
 }
 
 app.listen(port, () => {
