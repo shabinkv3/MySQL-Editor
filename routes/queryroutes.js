@@ -24,20 +24,25 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/query", (req, res) => {
-  Queries.find()
-    .then((queries) => {
-      var i;
-      matching = [];
-      for (i = 0; i < queries.length; i++) {
-        if (queries[i].query.indexOf(req.query.q.toLowerCase()) == 0) {
-          matching.push(queries[i].query);
+  if (req.query.q == "") {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.json({ matching: [] });
+  } else {
+    Queries.find()
+      .then((queries) => {
+        var i;
+        matching = [];
+        for (i = 0; i < queries.length; i++) {
+          if (queries[i].query.indexOf(req.query.q.toLowerCase()) == 0) {
+            matching.push(queries[i].query);
+          }
         }
-      }
 
-      res.header("Access-Control-Allow-Origin", "*");
-      res.json({ matching });
-    })
-    .catch((err) => res.send("Error: " + err));
+        res.header("Access-Control-Allow-Origin", "*");
+        res.json({ matching });
+      })
+      .catch((err) => res.send("Error: " + err));
+  }
 });
 
 /*router.get('/',(req,res)=>{
