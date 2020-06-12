@@ -193,10 +193,11 @@
       function selectSuggestion(event){
         
         input = document.getElementById("myInput");
-        currentInputWords = input.value.split(" ");
+        currentInputWords = input.value.split(/\s+/);
         currentInputWords[currentInputWords.length-1]=event.target.innerHTML;
+        x=input.value.substring(0,start)+event.target.innerHTML;
         newInput = currentInputWords.join(" ");
-        input.value = newInput;
+        input.value = x;
         document.getElementById("myInputautocomplete-list").innerHTML = "";
         input.focus();
       }
