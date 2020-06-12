@@ -18,11 +18,11 @@ app.use("/queries", queryrouter);
 
 app.use("/", (req, res) => {
   res.sendFile(__dirname + "/editor.html");
- });
+});
 
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 9001;
+  port = 9000;
 }
 
 app.listen(port, () => {

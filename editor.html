@@ -100,15 +100,57 @@
           type="text"
           name="myCountry"
           placeholder="Enter SQL command here.."
-          onInput="if(this.value.length>0 ) { end=this.value.length; if(this.value[end-1]==' '){start=end;} if(this.value[end-1]!=' ')get('http://localhost:9000/queries/query?q=',this.value,handle);}"
+          onInput="inputChange(event)"
+          onkeydown="handleSelection(event)"
         ></textarea>
         <div style="padding-left: 200px;" id="myInputautocomplete-list" class="autocomplete-items"></div>
       </div>
     </form>
 
     <script>
-     
+      input=document.getElementById('myInput');
+      selection=document.getElementById('myInputautocomplete-list');
       var start=0,end=0;
+      current=0;
+      selectionLength=0;
+
+      function handleSelection(event)
+      {
+        if(event.keyCode==40)
+        {
+          console.log(current);
+          selection.children[current].style.backgroundColor='white';
+          current=(current+1)%(selectionLength);
+          selection.children[current].style.backgroundColor='#ed7bb1';
+        }
+        else if(event.keyCode==13)
+        {
+          event.preventDefault();
+          selection.children[current].click();
+        }
+      }
+
+      function inputChange(event) {
+        current=0;
+        input=document.getElementById('myInput');
+        if (event.target.value.length > 0) {
+          end=input.value.length;
+          if(input.value[end-1]==' ')
+          {
+            start=end;
+            document.getElementById('myInputautocomplete-list').innerHTML="";
+          }
+          if(input.value[end-1]!=' ')
+          {
+          get('http://localhost:9000/queries/query?q=',input.value,handle);
+          }
+        } else {
+          document.getElementById("myInputautocomplete-list").innerHTML = "";
+        }
+      }
+
+     
+      
       function func(){
         location.reload();
       }
@@ -143,6 +185,7 @@
        // console.log(str);
         myObj = JSON.parse(data).matching;
         var s1 = str.substring(0,start);
+        selectionLength=myObj.length;
         
         for (var i = 0; i < myObj.length; i++) {
 
@@ -156,6 +199,8 @@
           node.appendChild(val);
 
           document.getElementById("myInputautocomplete-list").appendChild(node);
+          selection.children[current].style.backgroundColor="white";
+          selection.children[0].style.backgroundColor="#ed7bb1";
         }
       }
     </script>
