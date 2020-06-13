@@ -2,7 +2,6 @@
      
       body {
         font: 16px Arial;
-        background-image: url('../bg.jpg');
       }
 
       .autocomplete {
@@ -46,9 +45,7 @@
         background-color: DodgerBlue !important;
         color: #ffffff;
       }
-     html{
-       background:url('bg.jpg');
-     }
+    
   
       .btn-hover {
     width: 200px;
@@ -98,7 +95,7 @@
           cols="100"
           id="myInput"
           type="text"
-          name="myCountry"
+          name="mySQL"
           placeholder="Enter SQL command here.."
           onInput="inputChange(event)"
           onkeydown="handleSelection(event)"
@@ -121,7 +118,16 @@
           console.log(current);
           selection.children[current].style.backgroundColor='white';
           current=(current+1)%(selectionLength);
-          selection.children[current].style.backgroundColor='#ed7bb1';
+          selection.children[current].style.backgroundColor='#dbbaca';
+        }
+        else if(event.keyCode==38)
+        {
+          console.log(current);
+          selection.children[current].style.backgroundColor='white';
+          if(current>0)
+            current=(current-1)%(selectionLength);
+          
+          selection.children[current].style.backgroundColor='#dbbaca';
         }
         else if(event.keyCode==13)
         {
@@ -200,7 +206,7 @@
 
           document.getElementById("myInputautocomplete-list").appendChild(node);
           selection.children[current].style.backgroundColor="white";
-          selection.children[0].style.backgroundColor="#ed7bb1";
+          selection.children[0].style.backgroundColor="#dbbaca";
         }
       }
     </script>
